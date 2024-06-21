@@ -1,7 +1,7 @@
 /// @ref core
 /// @file glm/detail/type_tvec4.inl
 
-namespace glm{
+namespace glm {
 namespace detail
 {
 	template <typename T>
