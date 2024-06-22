@@ -1,5 +1,5 @@
 //Código fonte do Fragment Shader (em GLSL): ainda hardcoded
-#version 450
+#version 420
 
 in vec3 finalColor;
 in vec3 fragPos;

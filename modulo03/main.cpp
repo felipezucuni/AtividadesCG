@@ -170,7 +170,7 @@ int setupGeometry()
 	GLfloat vertices[] = {
 		-0.5, -0.5, 0.0,
 		 0.5, -0.5, 0.0,
-		 0.0, 0.5, 0.0,
+		 0.0,  0.5, 0.0,
 		 //outro triangulo vai aqui
 	};
 

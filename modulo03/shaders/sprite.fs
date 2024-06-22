@@ -1,4 +1,4 @@
-#version 450
+#version 420
 
 in vec4 vertexColor;
 in vec2 texCoord;

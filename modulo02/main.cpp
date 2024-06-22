@@ -22,7 +22,7 @@ const GLuint WIDTH = 1000, HEIGHT = 1000;
 
 // Código fonte do Vertex Shader (em GLSL): ainda hardcoded
 const char* vertexShaderSource = R"(
-                                    #version 330 core
+                                    #version 420 core
                                     layout (location = 0) in vec3 aPos;
                                     layout (location = 1) in vec3 aColor;
                                     out vec3 ourColor;
@@ -37,7 +37,7 @@ const char* vertexShaderSource = R"(
 
 // Código fonte do Fragment Shader (em GLSL): ainda hardcoded
 const char* fragmentShaderSource = R"(
-                                        #version 330 core
+                                        #version 420 core
                                         out vec4 FragColor;
                                         in vec3 ourColor;
                                         void main() {
@@ -54,7 +54,11 @@ int main() {
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    //Muita atenção aqui: alguns ambientes não aceitam essas configurações
+    //Você deve adaptar para a versão do OpenGL suportada por sua placa
+    //Sugestão: comente essas linhas de código para desobrir a versão e
+    //depois atualize (por exemplo: 4.5 com 4 e 5)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -168,26 +172,26 @@ void key_callback(GLFWwindow* window)
     }
 
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        rotateX += 0.01f;
+        rotateX += 0.2f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) {
-        rotateY += 0.01f;
+        rotateY += 0.2f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        rotateZ += 0.01f;
+        rotateZ += 0.2f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        zoom -= 0.01f;
+        zoom -= 0.1f;
         if (zoom < 1.0f) {
             zoom = 1.0f;
         }
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        zoom += 0.01f;
+        zoom += 0.1f;
         if (zoom > 45.0f) {
             zoom = 45.0f;
         }

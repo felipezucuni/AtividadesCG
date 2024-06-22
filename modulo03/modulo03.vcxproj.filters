@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{0ba80150-9eb8-4c4c-ab8a-16d14c06d838}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -16,5 +19,13 @@
     <ClCompile Include="..\common\stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\sprite.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\sprite.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

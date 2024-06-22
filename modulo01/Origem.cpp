@@ -35,26 +35,28 @@ int setupGeometry();
 const GLuint WIDTH = 1000, HEIGHT = 1000;
 
 // Código fonte do Vertex Shader (em GLSL): ainda hardcoded
-const GLchar* vertexShaderSource = "#version 450\n"
-									"layout (location = 0) in vec3 position;\n"
-									"layout (location = 1) in vec3 color;\n"
-									"uniform mat4 model;\n"
-									"out vec4 finalColor;\n"
-									"void main()\n"
-									"{\n"
+const GLchar* vertexShaderSource = R"(
+									#version 420
+									layout (location = 0) in vec3 position;
+									layout (location = 1) in vec3 color;
+									uniform mat4 model;
+									out vec4 finalColor;
+									void main()
+									{
 										//...pode ter mais linhas de código aqui!
-										"gl_Position = model * vec4(position, 1.0);\n"
-										"finalColor = vec4(color, 1.0);\n"
-									"}\0";
+										gl_Position = model * vec4(position, 1.0);
+										finalColor = vec4(color, 1.0);
+									})";
 
 //Códifo fonte do Fragment Shader (em GLSL): ainda hardcoded
-const GLchar* fragmentShaderSource ="#version 450\n"
-									"in vec4 finalColor;\n"
-									"out vec4 color;\n"
-									"void main()\n"
-									"{\n"
-										"color = finalColor;\n"
-									"}\n\0";
+const GLchar* fragmentShaderSource = R"(
+										#version 420
+										in vec4 finalColor;
+										out vec4 color;
+										void main()
+										{
+											color = finalColor;
+										})";
 
 bool rotateX = false, rotateY = false, rotateZ = false;
 
@@ -69,7 +71,7 @@ int main()
 	//Sugestão: comente essas linhas de código para desobrir a versão e
 	//depois atualize (por exemplo: 4.5 com 4 e 5)
 	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//Essencial para computadores da Apple
