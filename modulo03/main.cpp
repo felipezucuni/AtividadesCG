@@ -118,8 +118,10 @@ int main()
 
 		//Criando a matriz de modelo usando a GLM
 		glm::mat4 model = glm::mat4(1); //matriz identidade
+
 		//model = glm::translate(model, glm::vec3(400.0, 300.0, 0));
 		model = glm::rotate(model, (float)glfwGetTime() /*glm::radians(90.0f)*/, glm::vec3(0, 1, 0));
+
 		//model = glm::scale(model, glm::vec3(1920.0 * 0.5, 1080.0 * 0.5, 1.0));
 		GLint modelLoc = glGetUniformLocation(shader.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, false, glm::value_ptr(model));
@@ -139,10 +141,13 @@ int main()
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
+
 	// Pede pra OpenGL desalocar os buffers
 	glDeleteVertexArrays(1, &VAO);
+
 	// Finaliza a execução da GLFW, limpando os recursos alocados por ela
 	glfwTerminate();
+
 	return 0;
 }
 
@@ -274,14 +279,15 @@ int setupSprite()
 
 	float vertices[] = {
 		// posicoes          // cores          // coordenadas de textura
-		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0, // superior direito
-		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // inferior direito
-		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // inferior esquerdo
-		-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0  // superior esquerdo
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0,  // superior direito
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // inferior direito
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // inferior esquerdo
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0   // superior esquerdo
 	};
+
 	unsigned int indices[] = {
-	0, 1, 3, // primeiro triangulo
-	1, 2, 3  // segundo triangulo
+		0, 1, 3, // primeiro triangulo
+		1, 2, 3  // segundo triangulo
 	};
 
 	glGenVertexArrays(1, &VAO);
