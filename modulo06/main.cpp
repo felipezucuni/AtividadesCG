@@ -1,11 +1,9 @@
 #include <iostream>
 #include <string>
 #include <assert.h>
-#include <vector>
+#include <iostream>
 #include <fstream>
-#include <sstream>
-
-using namespace std;
+#include <vector>
 
 #include <glad.h>
 #include <glfw3.h>
@@ -14,7 +12,16 @@ using namespace std;
 #include <type_ptr.hpp>
 #include "Shader.h"
 
+using namespace std;
+
+//TO LOAD TEXTURE
 #include "stb_image.h"
+
+//TO CREATE TRAJECTORY 
+#include <random>
+#include <algorithm>
+#include "Bezier.h"
+
 
 struct Vertex {
 	glm::vec3 position;
@@ -33,21 +40,24 @@ struct Material {
 	std::string map_Kd;
 };
 
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+//TEXTURE
 int loadTexture(string path);
+//TEXTURE
+
 int loadSimpleOBJ(string filePath, int& nVertices, glm::vec3 color);
 vector<Material> loadMTL(string filePath);
+string mtlLibPath = "";
+const GLuint WIDTH = 750, HEIGHT = 750;
 
-const GLuint WIDTH = 1000, HEIGHT = 1000;
-
+char rotateChar;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-string mtlLibPath = "";
-char rotateChar;
 float deltaTime, lastFrame, lastX, lastY, yaw = -90, pitch;
 float fov = 45.0f;
 bool firstMouse = true;
@@ -56,6 +66,9 @@ vector <Vertex> vertices;
 vector <GLuint> indices;
 vector <glm::vec3> normals;
 vector <glm::vec2> texCoords;
+
+//FUN��ES TRAGET�RIA
+std::vector<glm::vec3> readControlPointsFromFile(const std::string& filename);
 
 int main() {
 	// Inicialização da GLFW
@@ -108,9 +121,25 @@ int main() {
 	shader.Use();
 
 	int nVertices;
+	
+	//POINTS AND CURVES
+	std::vector<glm::vec3> controlPoints = readControlPointsFromFile("controlPoints.txt");
+
+	int pointsPerSegment = 2000;
+	Bezier bezier;
+	bezier.setControlPoints(controlPoints);
+	bezier.setShader(&shader);
+	bezier.generateCurve(pointsPerSegment);
+	
+	bool forward = true;
+
+	int nbCurvePoints = bezier.getNbCurvePoints();
+	int i = 0;
+
+	//POINTS AND CURVES
 
 	//TEXTURE
-	GLuint VAO = loadSimpleOBJ("textures/suzanneTriTextured.obj", nVertices, glm::vec3(1, 0, 0));
+	GLuint VAO = loadSimpleOBJ("models/suzanneTriTextured.obj", nVertices, glm::vec3(0,0,0));
 	glUniform1i(glGetUniformLocation(shader.ID, "tex_coord"), 0);
 	//TEXTURE
 	vector<Material> mtlInfo = loadMTL(mtlLibPath);
@@ -122,24 +151,24 @@ int main() {
 	GLint viewLoc = glGetUniformLocation(shader.ID, "view");
 	GLint projLoc = glGetUniformLocation(shader.ID, "projection");
 
-	shader.setFloat("ka", mtlInfo[0].Ka[0]);
+	shader.setFloat("ka", mtlInfo[0].Ka[0]*1.5);
 	shader.setFloat("kd", 1.0f);
-	shader.setFloat("ks", mtlInfo[0].Ks[0]);
+	shader.setFloat("ks", mtlInfo[0].Ks[0]*1.5);
 	shader.setFloat("n", 0.0f);
 
-	shader.setVec3("lightPos", -2, 10.0, 2.0);
+	shader.setVec3("lightPos", 0.0, 0.0, 32.0);
 	shader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
 	glEnable(GL_DEPTH_TEST);
 
-	while (!glfwWindowShouldClose(window))
-	{
+	while (!glfwWindowShouldClose(window)) {
+
 		glfwPollEvents();
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		float angle = (GLfloat)glfwGetTime();
+		float angle = (GLfloat) glfwGetTime();
 
 		glm::mat4 model = glm::mat4(1);
 
@@ -147,44 +176,62 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		glm::mat4 view = glm::lookAt(cameraPos,
+			cameraPos + cameraFront,
+			cameraUp);
 
 		shader.setVec3("cameraPos", cameraPos.x, cameraPos.y, cameraPos.z);
-
+		
 		glm::mat4 projection = glm::perspective(fov, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
 
+		// MOVE OBJECT ON CURVE
+		
+		glm::vec3 pointOnCurve = bezier.getPointOnCurve(i);
+		model = glm::translate(model, pointOnCurve);
+		
+		if (i == 0) forward = true;
+		
+		if(forward)
+			i = (i + 1) % nbCurvePoints;
+		else
+			i = (i - 1) % nbCurvePoints;
+
+		if (i == 500) forward = false;
+		
+		// MOVE OBJECT ON CURVE
+
 		switch (rotateChar) {
-		case 'X':
-			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-			break;
+			case 'X':
+				model = glm::rotate(model, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+				break;
 
-		case 'Y':
-			model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-			break;
+			case 'Y':
+				model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+				break;
 
-		case 'Z':
-			model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-			break;
+			case 'Z':
+				model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+				break;
 
-		case '1':
-			model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			break;
+			case '1':
+				model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+				break;
 
-		case '2':
-			model = glm::rotate(model, glm::radians(90.0f) * 2, glm::vec3(1.0f, 0.0f, 0.0f));
-			break;
+			case '2':
+				model = glm::rotate(model, glm::radians(90.0f) * 2, glm::vec3(1.0f, 0.0f, 0.0f));
+				break;
 
-		case '3':
-			model = glm::rotate(model, glm::radians(90.0f) * 3, glm::vec3(1.0f, 0.0f, 0.0f));
-			break;
+			case '3':
+				model = glm::rotate(model, glm::radians(90.0f) * 3, glm::vec3(1.0f, 0.0f, 0.0f));
+				break;
 
-		case '4':
-			model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			break;
+			case '4':
+				model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				break;
 
-		case '5':
-			model = glm::rotate(model, glm::radians(90.0f) * 3, glm::vec3(0.0f, 1.0f, 0.0f));
-			break;
+			case '5':
+				model = glm::rotate(model, glm::radians(90.0f) * 3, glm::vec3(0.0f, 1.0f, 0.0f));
+				break;
 		}
 
 		GLint modelLoc = glGetUniformLocation(shader.ID, "model");
@@ -199,6 +246,7 @@ int main() {
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, nVertices);
+		
 		glBindVertexArray(0);
 
 		//TEXTURE
@@ -208,73 +256,105 @@ int main() {
 
 		glfwSwapBuffers(window);
 	}
-
+	
 	glDeleteVertexArrays(1, &VAO);
 	glfwTerminate();
-
 	return 0;
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-{
-	float cameraSpeed = 10.0f * deltaTime;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	
+	float cameraSpeed = 100.0f * deltaTime;
 
 	switch (key) {
-	case GLFW_KEY_ESCAPE:
-		glfwSetWindowShouldClose(window, GL_TRUE);
-		break;
 
-	case GLFW_KEY_X:
-		rotateChar = 'X';
-		break;
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, GL_TRUE);
+			break;
 
-	case GLFW_KEY_Y:
-		rotateChar = 'Y';
-		break;
+		case GLFW_KEY_X:
+			rotateChar = 'X';
+			break;
 
-	case GLFW_KEY_Z:
-		rotateChar = 'Z';
-		break;
+		case GLFW_KEY_Y:
+			rotateChar = 'Y';
+			break;
 
-	case GLFW_KEY_W:
-		cameraPos += cameraSpeed * cameraFront;
-		break;
+		case GLFW_KEY_Z:
+			rotateChar = 'Z';
+			break;
 
-	case GLFW_KEY_S:
-		cameraPos -= cameraSpeed * cameraFront;
-		break;
+		case GLFW_KEY_W:
+			cameraPos += cameraSpeed * cameraFront;
+			break;
 
-	case GLFW_KEY_A:
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		break;
+		case GLFW_KEY_S:
+			cameraPos -= cameraSpeed * cameraFront;
+			break;
 
-	case GLFW_KEY_D:
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		break;
+		case GLFW_KEY_A:
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			break;
 
-	case GLFW_KEY_1:
-		rotateChar = '1';
-		break;
+		case GLFW_KEY_D:
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+			break;
 
-	case GLFW_KEY_2:
-		rotateChar = '2';
-		break;
+		case GLFW_KEY_1:
+			rotateChar = '1';
+			break;
 
-	case GLFW_KEY_3:
-		rotateChar = '3';
-		break;
+		case GLFW_KEY_2:
+			rotateChar = '2';
+			break;
 
-	case GLFW_KEY_4:
-		rotateChar = '4';
-		break;
+		case GLFW_KEY_3:
+			rotateChar = '3';
+			break;
 
-	case GLFW_KEY_5:
-		rotateChar = '5';
-		break;
+		case GLFW_KEY_4:
+			rotateChar = '4';
+			break;
 
-	default:
-		rotateChar = NULL;
+		case GLFW_KEY_5:
+			rotateChar = '5';
+			break;
+		default:
+			rotateChar = NULL;
 	}
+}
+
+std::vector<glm::vec3> readControlPointsFromFile(const std::string& filename)
+{
+	std::vector<glm::vec3> controlPoints;
+
+	std::ifstream file(filename);
+	if (!file)
+	{
+		std::cerr << "Falha ao abrir o arquivo " << filename << std::endl;
+		return controlPoints;
+	}
+
+	std::string line;
+	while (std::getline(file, line))
+	{
+		if (line.find("Point: (") != std::string::npos)
+		{
+			// Extrair os valores das coordenadas
+			size_t startPos = line.find("(") + 1;
+			size_t endPos = line.find(")");
+			std::string pointStr = line.substr(startPos, endPos - startPos);
+
+			std::stringstream ss(pointStr);
+			glm::vec3 point;
+			char comma;
+			ss >> point.x >> comma >> point.y >> comma >> point.z;
+			controlPoints.push_back(point);
+		}
+	}
+
+	file.close();
+	return controlPoints;
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -311,7 +391,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	if (fov >= 1.0f && fov <= 45.0f)
-		fov -= yoffset * 0.1;
+		fov -= yoffset*0.1;
 	if (fov <= 1.0f)
 		fov = 1.0f;
 	if (fov >= 45.0f)
@@ -431,6 +511,8 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 		char line[100];
 		string sline;
 
+
+
 		while (!inputFile.eof())
 		{
 			inputFile.getline(line, 100);
@@ -440,13 +522,12 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 
 			istringstream ssline(line);
 			ssline >> word;
-			if (word == "mtllib")
+			if (word == "mtllib") 
 			{
 				//LOAD MTL FILE ADDRESS
 				ssline >> mtlLibPath;
 				cout << mtlLibPath << std::endl;
 			}
-
 			if (word == "v")
 			{
 				glm::vec3 v;
@@ -455,7 +536,6 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 
 				vertices.push_back(v);
 			}
-
 			if (word == "vt")
 			{
 				glm::vec2 vt;
@@ -463,7 +543,6 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 
 				texCoords.push_back(vt);
 			}
-
 			if (word == "vn")
 			{
 				glm::vec3 vn;
@@ -510,7 +589,6 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 	{
 		cout << "Problema ao encontrar o arquivo " << filepath << endl;
 	}
-
 	inputFile.close();
 	GLuint VBO, VAO;
 	nVerts = vbuffer.size() / 11; // 3 pos + 3 cor + 3 normal + 2 texcoord
@@ -523,7 +601,7 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 	glGenVertexArrays(1, &VAO);
 
 	glBindVertexArray(VAO);
-
+	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
@@ -538,6 +616,6 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
 	return VAO;
 }
+

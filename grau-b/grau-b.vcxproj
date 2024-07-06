@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6EB8BFD4-8A42-4BF4-945D-6F5D9D396154}</ProjectGuid>
-    <RootNamespace>modulo05</RootNamespace>
+    <ProjectGuid>{97CBE7DE-5AC4-4B9B-924E-62F3F356E89E}</ProjectGuid>
+    <RootNamespace>grau-b</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -136,15 +136,11 @@
     <ClCompile Include="..\common\Mesh.cpp" />
     <ClCompile Include="..\common\Shader.cpp" />
     <ClCompile Include="..\common\stb_image.cpp" />
-    <ClCompile Include="camera.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\Phong.fs" />
     <None Include="shaders\Phong.vs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\common\Camera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

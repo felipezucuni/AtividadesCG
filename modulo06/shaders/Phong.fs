@@ -1,4 +1,4 @@
-#version 450
+#version 400
 
 in vec3 finalColor;
 in vec3 scaledNormal;
@@ -20,20 +20,23 @@ out vec4 color;
 
 void main() {
 
-    vec3 ambiente = lightColor * ka; //OK
+    vec3 ambiente = lightColor * ka;
 
-    //ILUMINA√á√ÉO DIFUSA
-    vec3 N = normalize(scaledNormal); //OK
-    vec3 L = normalize(lightPos - fragmentPos); //OK
-    float diff = max(dot(N, L), 0.0); //OK
-    vec3 diffuse = diff * lightColor * kd; //OK
+    //ILUMINA«√O DIFUSA
+    vec3 N = normalize(scaledNormal);
+    vec3 L = normalize(lightPos - fragmentPos);
+    float diff = max(dot(N, L), 0.0);
 
-    //ILUMINA√á√ÉO ESPECULAR
+    vec3 diffuse = diff * lightColor * kd;
+
+    //ILUMINA«√O ESPECULAR
+
     vec3 V = normalize(cameraPos - fragmentPos);
-    vec3 R = normalize(reflect(-L, N));
-    float spec = max(dot(R, V), 0.0);
-    spec = pow(spec,n);
-    vec3 specular = ks * spec * lightColor;
+	vec3 R = normalize(reflect(-L,N));
+	float spec = max(dot(R,V),0.0);
+	spec = pow(spec,n);
+	vec3 specular = ks * spec * lightColor;
+
 
     vec3 result = (ambiente + diffuse) * finalColor + specular;
 

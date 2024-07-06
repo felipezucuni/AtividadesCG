@@ -1,4 +1,4 @@
-//Código fonte do Fragment Shader (em GLSL): ainda hardcoded
+//C digo fonte do Fragment Shader (em GLSL): ainda hardcoded
 #version 450
 
 in vec3 finalColor;
@@ -17,21 +17,21 @@ uniform float q;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 
-//Posição da Camera
+//Posi  o da Camera
 uniform vec3 cameraPos;
 
 void main()
 {
-	//Cálculo da parcela de iluminação ambiente
+	//C lculo da parcela de ilumina  o ambiente
 	vec3 ambient = ka * lightColor;
 
-	//Cálculo da parcela de iluminação difusa
+	//C lculo da parcela de ilumina  o difusa
 	vec3 N = normalize(scaledNormal);
 	vec3 L = normalize(lightPos - fragPos);
 	float diff = max(dot(N,L),0.0);
 	vec3 diffuse = kd * diff * lightColor;
 
-	//Cálculo da parcela de iluminação especular
+	//C lculo da parcela de ilumina  o especular
 	vec3 V = normalize(cameraPos - fragPos);
 	vec3 R = normalize(reflect(-L,N));
 	float spec = max(dot(R,V),0.0);

@@ -35,7 +35,8 @@ void main() {
     spec = pow(spec,n);
     vec3 specular = ks * spec * lightColor;
 
-    vec3 result = (ambiente + diffuse) * finalColor + specular;
+    //vec3 result = (ambiente + diffuse) * finalColor + specular;
+    vec3 result = (ambiente + diffuse);
 
     // Aplicar a textura
     vec4 texColor = texture(tex_buffer, texCoord);
