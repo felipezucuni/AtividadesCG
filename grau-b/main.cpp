@@ -46,17 +46,9 @@ vector<Material> loadMTL(string filePath);
 
 const GLuint WIDTH = 1000, HEIGHT = 1000;
 
-glm::vec3 cameraPos1 = glm::vec3(0.0f, 0.0f, 5.0f);
-glm::vec3 cameraPos2 = glm::vec3(0.0f, 0.0f, 5.0f);
-glm::vec3 cameraPos3 = glm::vec3(0.0f, 0.0f, 5.0f);
-
-glm::vec3 cameraFront1 = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraFront2 = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraFront3 = glm::vec3(0.0f, 0.0f, -1.0f);
-
-glm::vec3 cameraUp1 = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraUp2 = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraUp3 = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 string mtlLibPath = "";
 char rotateChar;
@@ -84,7 +76,7 @@ int main() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Olá 3D -- Luis Felipe Zucuni Trindade!", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Entrega GB - Douglas Rinaldi, Gabriel Carossi, Luis Felipe Trindade!", nullptr, nullptr);
 	if (!window) {
 		cerr << "Não foi possível abrir janela com a GLFW" << endl;
 		glfwTerminate();
@@ -169,10 +161,8 @@ int main() {
 	shader3.setFloat("n", 0.0f);
 	shader3.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
-	glm::vec3 lightPos1 = glm::vec3(0.0f, 0.0f, 32.0f);
-	glm::vec3 lightPos2 = glm::vec3(0.0f, 0.0f, 32.0f);
-	glm::vec3 lightPos3 = glm::vec3(0.0f, 0.0f, 32.0f);
-
+	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 32.0f);
+	
 	glEnable(GL_DEPTH_TEST);
 
 	glm::mat4 model1 = glm::mat4(1);
@@ -183,9 +173,7 @@ int main() {
 	model2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));  // Posicionar o segundo cubo para a direita
 	model3 = glm::translate(glm::mat4(1.0f), glm::vec3(1.5f, -1.0f, 0.0f));  // Posicionar o segundo cubo para a direita
 
-	glm::mat4 view1;
-	glm::mat4 view2;
-	glm::mat4 view3;
+	glm::mat4 view;
 
 	//POINTS AND CURVES
 	//Conjunto de pontos de controle
@@ -237,86 +225,30 @@ int main() {
 		aux.push_back(pointOnCurve1);
 		// MOVE OBJECT ON CURVE
 
-		glm::mat4 projection1 = glm::perspective(fov, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
-		glm::mat4 projection2 = glm::perspective(fov, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
-		glm::mat4 projection3 = glm::perspective(fov, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(fov, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
 
 		GLint modelLoc1 = glGetUniformLocation(shader1.ID, "model");
 		GLint modelLoc2 = glGetUniformLocation(shader2.ID, "model");
 		GLint modelLoc3 = glGetUniformLocation(shader3.ID, "model");
 
-		switch (selectedModel) {
-			case 1:
-				view1 = glm::lookAt(cameraPos1, cameraPos1 + cameraFront1, cameraUp1);
-				shader1.setVec3("cameraPos", cameraPos1.x, cameraPos1.y, cameraPos1.z);
-				shader1.setVec3("lightPos", lightPos1.x + cameraPos1.x, lightPos1.y + cameraPos1.y, lightPos1.z + cameraPos1.z);
-				break;
-			case 2:
-				view2 = glm::lookAt(cameraPos2, cameraPos2 + cameraFront2, cameraUp2);
-				shader2.setVec3("cameraPos", cameraPos2.x, cameraPos2.y, cameraPos2.z);
-				shader2.setVec3("lightPos", lightPos2.x + cameraPos1.x, lightPos2.y + cameraPos1.y, lightPos2.z + cameraPos2.z);
-				break;
-			case 3:
-				view3 = glm::lookAt(cameraPos3, cameraPos3 + cameraFront3, cameraUp3);
-				shader3.setVec3("cameraPos", cameraPos3.x, cameraPos3.y, cameraPos3.z);
-				shader3.setVec3("lightPos", lightPos3.x + cameraPos1.x, lightPos3.y + cameraPos3.y, lightPos3.z + cameraPos3.z);
-				break;
-		}
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		shader1.setVec3("cameraPos", cameraPos.x, cameraPos.y, cameraPos.z);
+		shader1.setVec3("lightPos", lightPos.x + cameraPos.x, lightPos.y + cameraPos.y, lightPos.z + cameraPos.z);
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 += cameraFront1 * deltaTime;
-					break;
-				case 2:
-					cameraPos2 += cameraFront2 * deltaTime;
-					break;
-				case 3:
-					cameraPos3 += cameraFront3 * deltaTime;
-					break;
-			}
+			cameraPos += cameraFront * deltaTime;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 -= cameraFront1 * deltaTime;
-					break;
-				case 2:
-					cameraPos2 -= cameraFront2 * deltaTime;
-					break;
-				case 3:
-					cameraPos3 -= cameraFront3 * deltaTime;
-					break;
-			}
+			cameraPos -= cameraFront * deltaTime;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 -= glm::normalize(glm::cross(cameraFront1, cameraUp1)) * deltaTime;
-					break;
-				case 2:
-					cameraPos2 -= glm::normalize(glm::cross(cameraFront2, cameraUp2)) * deltaTime;
-					break;
-				case 3:
-					cameraPos3 -= glm::normalize(glm::cross(cameraFront3, cameraUp3)) * deltaTime;
-					break;
-			}
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * deltaTime;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 += glm::normalize(glm::cross(cameraFront1, cameraUp1)) * deltaTime;
-					break;
-				case 2:
-					cameraPos2 += glm::normalize(glm::cross(cameraFront2, cameraUp2)) * deltaTime;
-					break;
-				case 3:
-					cameraPos3 += glm::normalize(glm::cross(cameraFront3, cameraUp3)) * deltaTime;
-					break;
-			}
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * deltaTime;
 		}
 
 		// Aplica rotação ao modelo selecionado
@@ -346,8 +278,8 @@ int main() {
 			}
 		}
 
-		glUniformMatrix4fv(projLoc1, 1, GL_FALSE, glm::value_ptr(projection1));
-		glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view1));
+		glUniformMatrix4fv(projLoc1, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view));
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texID1);
 		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
@@ -355,8 +287,6 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, nVertices1);
 		glBindVertexArray(0);
 
-		glUniformMatrix4fv(projLoc2, 1, GL_FALSE, glm::value_ptr(projection2));
-		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view2));
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texID2);
 		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(model2));
@@ -364,8 +294,6 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, nVertices2);
 		glBindVertexArray(0);
 
-		glUniformMatrix4fv(projLoc3, 1, GL_FALSE, glm::value_ptr(projection3));
-		glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view3));
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texID3);
 		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model3));
@@ -424,61 +352,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 
 		case GLFW_KEY_W:
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 += cameraSpeed * cameraFront1;
-					break;
-				case 2:
-					cameraPos2 += cameraSpeed * cameraFront2;
-					break;
-				case 3:
-					cameraPos3 += cameraSpeed * cameraFront3;
-					break;
-			}
+			cameraPos += cameraSpeed * cameraFront;
 			
 			break;
 		case GLFW_KEY_S:
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 -= cameraSpeed * cameraFront1;
-					break;
-				case 2:
-					cameraPos2 -= cameraSpeed * cameraFront2;
-					break;
-				case 3:
-					cameraPos3 -= cameraSpeed * cameraFront3;
-					break;
-			}
-
+			cameraPos -= cameraSpeed * cameraFront;
 			break;
 		case GLFW_KEY_A:
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 -= glm::normalize(glm::cross(cameraFront1, cameraUp1)) * cameraSpeed;
-					break;
-				case 2:
-					cameraPos2 -= glm::normalize(glm::cross(cameraFront2, cameraUp3)) * cameraSpeed;
-					break;
-				case 3:
-					cameraPos3 -= glm::normalize(glm::cross(cameraFront3, cameraUp3)) * cameraSpeed;
-					break;
-			}
-			
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;	
 			break;
 		case GLFW_KEY_D:
-			switch (selectedModel) {
-				case 1:
-					cameraPos1 += glm::normalize(glm::cross(cameraFront1, cameraUp1)) * cameraSpeed;
-					break;
-				case 2:
-					cameraPos2 += glm::normalize(glm::cross(cameraFront2, cameraUp3)) * cameraSpeed;
-					break;
-				case 3:
-					cameraPos3 += glm::normalize(glm::cross(cameraFront3, cameraUp3)) * cameraSpeed;
-					break;
-			}
-
-			break;
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		}
 	}
 }
@@ -512,18 +396,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-	switch (selectedModel) {
-	case 1:
-		cameraFront1 = glm::normalize(front);
-		break;
-	case 2:
-		cameraFront2 = glm::normalize(front);
-		break;
-	case 3:
-		cameraFront3 = glm::normalize(front);
-		break;
-	}
+	cameraFront = glm::normalize(front);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -532,7 +405,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	if (fov <= 1.0f)
 		fov = 1.0f;
 	if (fov >= 45.0f)
-		fov = 45.0f;
+		fov = 45.0f; 
 }
 
 vector<Material> loadMTL(string filepath) {
@@ -547,7 +420,7 @@ vector<Material> loadMTL(string filepath) {
 	Material currentMaterial;
 	string line;
 
-	while (std::getline(file, line)) {
+	while (getline(file, line)) {
 		istringstream iss(line);
 		string prefix;
 		iss >> prefix;
@@ -557,29 +430,21 @@ vector<Material> loadMTL(string filepath) {
 				materials.push_back(currentMaterial);
 			}
 			iss >> currentMaterial.name;
-		}
-		else if (prefix == "Ns") {
+		} else if (prefix == "Ns") {
 			iss >> currentMaterial.Ns;
-		}
-		else if (prefix == "Ka") {
+		} else if (prefix == "Ka") {
 			iss >> currentMaterial.Ka[0] >> currentMaterial.Ka[1] >> currentMaterial.Ka[2];
-		}
-		else if (prefix == "Ks") {
+		} else if (prefix == "Ks") {
 			iss >> currentMaterial.Ks[0] >> currentMaterial.Ks[1] >> currentMaterial.Ks[2];
-		}
-		else if (prefix == "Ke") {
+		} else if (prefix == "Ke") {
 			iss >> currentMaterial.Ke[0] >> currentMaterial.Ke[1] >> currentMaterial.Ke[2];
-		}
-		else if (prefix == "Ni") {
+		} else if (prefix == "Ni") {
 			iss >> currentMaterial.Ni;
-		}
-		else if (prefix == "d") {
+		} else if (prefix == "d") {
 			iss >> currentMaterial.d;
-		}
-		else if (prefix == "illum") {
+		} else if (prefix == "illum") {
 			iss >> currentMaterial.illum;
-		}
-		else if (prefix == "map_Kd") {
+		} else if (prefix == "map_Kd") {
 			iss >> currentMaterial.map_Kd;
 		}
 	}
@@ -609,20 +474,15 @@ int loadTexture(string path)
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
 
-	if (data)
-	{
-		if (nrChannels == 3) //jpg, bmp
-		{
+	if (data) {
+		//jpg, bmp
+		if (nrChannels == 3) {
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		}
-		else //png
-		{
+		} else { //png
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		}
 		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
+	} else {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 
@@ -643,13 +503,12 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 
 	ifstream inputFile;
 	inputFile.open(filepath.c_str());
-	if (inputFile.is_open())
-	{
+	
+	if (inputFile.is_open()) {
 		char line[100];
 		string sline;
 
-		while (!inputFile.eof())
-		{
+		while (!inputFile.eof()) {
 			inputFile.getline(line, 100);
 			sline = line;
 
@@ -657,44 +516,38 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 
 			istringstream ssline(line);
 			ssline >> word;
-			if (word == "mtllib")
-			{
+			if (word == "mtllib") {
 				//LOAD MTL FILE ADDRESS
 				ssline >> mtlLibPath;
-				cout << mtlLibPath << std::endl;
+				cout << mtlLibPath << endl;
 			}
 
-			if (word == "v")
-			{
+			if (word == "v") {
 				glm::vec3 v;
 				ssline >> v.x >> v.y >> v.z;
-
 
 				vertices.push_back(v);
 			}
 
-			if (word == "vt")
-			{
+			if (word == "vt") {
 				glm::vec2 vt;
 				ssline >> vt.s >> vt.t;
 
 				texCoords.push_back(vt);
 			}
 
-			if (word == "vn")
-			{
+			if (word == "vn") {
 				glm::vec3 vn;
 				ssline >> vn.x >> vn.y >> vn.z;
 				normals.push_back(vn);
 			}
-			if (word == "f")
-			{
+
+			if (word == "f") {
 				string tokens[3];
 
 				ssline >> tokens[0] >> tokens[1] >> tokens[2];
 
-				for (int i = 0; i < 3; i++)
-				{
+				for (int i = 0; i < 3; i++) {
 					int pos = tokens[i].find("/");
 					string token = tokens[i].substr(0, pos);
 					int index = atoi(token.c_str()) - 1;
@@ -722,9 +575,7 @@ int loadSimpleOBJ(string filepath, int& nVerts, glm::vec3 color)
 				}
 			}
 		}
-	}
-	else
-	{
+	} else {
 		cout << "Problema ao encontrar o arquivo " << filepath << endl;
 	}
 
