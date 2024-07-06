@@ -104,12 +104,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\projects\cpp\AtividadesCG\common;C:\projects\cpp\AtividadesCG\external\glad\include;C:\projects\cpp\AtividadesCG\external\glad\include\glad;C:\projects\cpp\AtividadesCG\external\glad\include\KHR;C:\projects\cpp\AtividadesCG\external\glfw\include\GLFW;C:\projects\cpp\AtividadesCG\external\glm\glm;C:\projects\cpp\AtividadesCG\external\glm\glm\gtc;C:\projects\cpp\AtividadesCG\external\glm\glm\gtx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)external\glad\include;$(SolutionDir)external\glad\include\glad;$(SolutionDir)external\glad\include\KHR;$(SolutionDir)external\glfw\include\GLFW;$(SolutionDir)external\glm\glm;$(SolutionDir)external\glm\glm\gtc;$(SolutionDir)external\glm\glm\gtx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\projects\cpp\AtividadesCG\external\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)external\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRT.lib;</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -122,14 +122,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\projects\cpp\AtividadesCG\common;C:\projects\cpp\AtividadesCG\external\glad\include;C:\projects\cpp\AtividadesCG\external\glad\include\glad;C:\projects\cpp\AtividadesCG\external\glad\include\KHR;C:\projects\cpp\AtividadesCG\external\glfw\include\GLFW;C:\projects\cpp\AtividadesCG\external\glm\glm;C:\projects\cpp\AtividadesCG\external\glm\glm\gtc;C:\projects\cpp\AtividadesCG\external\glm\glm\gtx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)external\glad\include;$(SolutionDir)external\glad\include\glad;$(SolutionDir)external\glad\include\KHR;$(SolutionDir)external\glfw\include\GLFW;$(SolutionDir)external\glm\glm;$(SolutionDir)external\glm\glm\gtc;$(SolutionDir)external\glm\glm\gtx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\projects\cpp\AtividadesCG\external\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)external\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRT.lib;</IgnoreSpecificDefaultLibraries>
     </Link>

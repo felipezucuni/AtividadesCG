@@ -132,6 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\Bezier.cpp" />
+    <ClCompile Include="..\common\Curve.cpp" />
     <ClCompile Include="..\common\glad.c" />
     <ClCompile Include="..\common\Mesh.cpp" />
     <ClCompile Include="..\common\Shader.cpp" />

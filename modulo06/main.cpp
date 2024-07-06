@@ -135,7 +135,6 @@ int main() {
 
 	int nbCurvePoints = bezier.getNbCurvePoints();
 	int i = 0;
-
 	//POINTS AND CURVES
 
 	//TEXTURE
